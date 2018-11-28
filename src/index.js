@@ -5,26 +5,33 @@ const dogFilterBtn = document.querySelector('#good-dog-filter')
 const dogBarEl = document.querySelector('#dog-bar')
 const dogInfoEl = document.querySelector('#dog-info')
 
-let state = []
 
+const state = {
+    dogs: [],
+    sortByGoodBoy: false
+}
 
+// ADD DOG TO STATE
+const addDog = dog => {
+    state.dogs.push(dog)
+}
 
+// ADD DOGS TO STATE
+const addDogs = dogs => {
+    dogs.forEach(dog => addDog(dog))
+}
 
-// FETCH DOGS ON PAGE LOAD
-document.addEventListener('DOMContentLoaded', event => {
-    fetchDogs()
-        .then(renderDogs)
-})
+// RENDER DOGS
+const renderDogs = (dogs) => {
+    dogs.forEach(dog => renderDog(dog))
+}
 
 // RENDER DOG TO DOG BAR AND SUMMARY BAR
 const renderDog = (dog) => {
     const dogSpan = document.createElement('span')
     dogSpan.innerText = dog.name
-    dogBarEl.appendChild(dogSpan)
-    state.push(dog)
 
     dogSpan.addEventListener('click', () => {
-
         const renderGoodOrBadDog = () => dog.isGoodDog ? 'Good Dog!' : 'Bad Dog!'
         
         dogInfoEl.innerHTML = `
@@ -40,11 +47,32 @@ const renderDog = (dog) => {
                 .catch(err => alert('Failed to write to database. Soz'))
         })
     })
+    dogBarEl.appendChild(dogSpan)
 }
 
+// UPDATE BAR FROM STATE
+const updateBar = () => {
+    dogBarEl.innerHTML = ''
+    renderDogs(state.dogs)
+}
+
+
+
 // SORT DOGS
-dogFilterBtn.addEventListener('click', event => {
-    goodBoyFilter = false
+dogFilterBtn.addEventListener('click', () => {
+    state.sortByGoodBoy = !state.sortByGoodBoy
+    
+    const getGoodDogs = (state) => state.dogs.filter(function (dog) {
+        return dog.isGoodDog
+    })
+
+    if (state.sortByGoodBoy) {
+        dogBarEl.innerHTML = ''
+        renderDogs(getGoodDogs(state))
+    } else {
+        dogBarEl.innerHTML = ''
+        renderDogs(state.dogs)
+    }
 
     const changeBtnText = () => {
         return dogFilterBtn.innerText === 
@@ -52,34 +80,11 @@ dogFilterBtn.addEventListener('click', event => {
             'Filter good dogs: ON' : 'Filter good dogs: OFF'
     }
 
-    const getGoodDogs = () => state.filter(function(dog) {
-        return dog.isGoodDog
-    })
-
-    goodBoyFilter = !goodBoyFilter
     dogFilterBtn.innerText = changeBtnText()
-
-    if (goodBoyFilter) {
-        clearDogs()
-        renderDogs(getGoodDogs())
-    } else {
-        clearDogs()
-        renderDogs(state)
-    }
-
 })
 
-// CLEAR DOGS
-const clearDogs = () => {
-    dogBarEl.innerHTML = ''
-}
-
-// RENDER DOGS
-const renderDogs = (dogs) => {
-    dogs.forEach(dog => renderDog(dog))
-}
-
-//UPDATE STATE
-const updateState = () => {
-
-}
+fetchDogs()
+    .then(dogs => {
+        addDogs(dogs)
+        updateBar()
+    })
