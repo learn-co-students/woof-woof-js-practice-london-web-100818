@@ -23,13 +23,19 @@
 }
 
 #dog-bar span {
-  height: 80%;
+  height: 40%;
   width: 8vw;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 2em;
-  border: 1px solid blue;
+  border-radius: 1em;
+  border: 1px solid rgb(103, 161, 194);
+}
+
+#dog-bar  :hover {
+  background-color: rgb(242, 250, 253);
+  color: rgb(45, 137, 212)
+
 }
 
 #dog-summary-container {
